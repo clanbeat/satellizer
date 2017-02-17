@@ -67,7 +67,7 @@ export default class OAuth2 {
     };
   }
 
-  init(options: IOAuth2Options, userData: any): angular.IPromise<any> {
+  init(options: IOAuth2Options, userData: any, userOptions: any): angular.IPromise<any> {
     return this.$q((resolve, reject) => {
       angular.extend(this.defaults, options);
 
@@ -94,13 +94,14 @@ export default class OAuth2 {
           ));
         }
 
-        resolve(this.exchangeForToken(oauth, userData));
+        resolve(this.exchangeForToken(oauth, userData, userOptions));
       }).catch(error => reject(error));
     });
   }
 
-  exchangeForToken(oauthData: { code?, state? }, userData: any): angular.IHttpPromise<any> {
+  exchangeForToken(oauthData: { code?, state? }, userData: any, userOptions: any): angular.IHttpPromise<any> {
     const payload = angular.extend({}, userData);
+	const options = angular.extend({ withCredentials: this.SatellizerConfig.withCredentials }, userOptions);
 
     angular.forEach(this.defaults.responseParams, (value, key) => {
       switch (key) {
@@ -126,7 +127,7 @@ export default class OAuth2 {
       joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) :
       this.defaults.url;
 
-    return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.SatellizerConfig.withCredentials });
+    return this.$http.post(exchangeForTokenUrl, payload, options);
   }
 
   buildQueryString(): string {

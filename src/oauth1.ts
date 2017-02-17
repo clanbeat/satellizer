@@ -4,10 +4,10 @@ import Popup from './popup';
 import { IOAuth1Options } from './oauth1';
 
 export interface IOAuth1 {
-  init(options: any, data: any): angular.IPromise<any>;
+  init(options: any, data: any, userOptions: any): angular.IPromise<any>;
   getRequestToken(): angular.IHttpPromise<any>;
   openPopup(options: IOAuth1Options, response: angular.IHttpPromiseCallbackArg<any>): angular.IPromise<any>;
-  exchangeForToken(oauthData: any, userData: any): angular.IHttpPromise<any>;
+  exchangeForToken(oauthData: any, userData: any, userOptions: any): angular.IHttpPromise<any>;
   buildQueryString(obj: any): string;
 }
 
@@ -50,7 +50,7 @@ export default class OAuth1 implements IOAuth1 {
     };
   };
 
-  init(options: IOAuth1Options, userData: any): angular.IHttpPromise<any> {
+  init(options: IOAuth1Options, userData: any, userOptions: any): angular.IHttpPromise<any> {
     angular.extend(this.defaults, options);
     const { name, popupOptions } = options;
     const { redirectUri } = this.defaults;
@@ -62,7 +62,7 @@ export default class OAuth1 implements IOAuth1 {
 
     return this.getRequestToken().then((response) => {
       return this.openPopup(options, response).then((popupResponse) => {
-        return this.exchangeForToken(popupResponse, userData);
+        return this.exchangeForToken(popupResponse, userData, userOptions);
       });
     });
   }
@@ -84,10 +84,11 @@ export default class OAuth1 implements IOAuth1 {
     return this.$http.post(url, this.defaults);
   }
 
-  exchangeForToken(oauthData, userData): angular.IHttpPromise<any> {
+  exchangeForToken(oauthData, userData, userOptions): angular.IHttpPromise<any> {
     const payload = angular.extend({}, userData, oauthData);
+	const options = angular.extend({ withCredentials: this.SatellizerConfig.withCredentials }, userOptions);
     const exchangeForTokenUrl = this.SatellizerConfig.baseUrl ? joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
-    return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.SatellizerConfig.withCredentials });
+    return this.$http.post(exchangeForTokenUrl, payload, options);
   }
 
   buildQueryString(obj): string {

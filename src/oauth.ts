@@ -31,7 +31,7 @@ export default class OAuth {
               private SatellizerOAuth1: OAuth1,
               private SatellizerOAuth2: OAuth2) {}
 
-  authenticate(name: string, userData?: any): angular.IPromise<any> {
+  authenticate(name: string, userData?: any, userOptions?: any): angular.IPromise<any> {
     return this.$q((resolve, reject) => {
       const provider = this.SatellizerConfig.providers[name];
 
@@ -48,7 +48,7 @@ export default class OAuth {
           return reject(new Error('Invalid OAuth Type'));
       }
 
-      return oauth.init(provider, userData).then((response) => {
+      return oauth.init(provider, userData, userOptions).then((response) => {
         if (provider.url) {
           this.SatellizerShared.setToken(response);
         }

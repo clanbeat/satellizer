@@ -110,7 +110,7 @@ export default class AuthProvider {
       login: (user, options) => SatellizerLocal.login(user, options),
       signup: (user, options) => SatellizerLocal.signup(user, options),
       logout: () => SatellizerShared.logout(),
-      authenticate: (name, data) => SatellizerOAuth.authenticate(name, data),
+      authenticate: (name, data, options) => SatellizerOAuth.authenticate(name, data, options),
       link: (name, data) => SatellizerOAuth.authenticate(name, data),
       unlink: (name, options) => SatellizerOAuth.unlink(name, options),
       isAuthenticated: () => SatellizerShared.isAuthenticated(),
